@@ -1,0 +1,9 @@
+# Minimal requirements - just what we need for the demo
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+streamlit>=1.28.0
+
+# Optional: for full AI functionality (comment out if you have conflicts)
+# langchain>=0.1.0
+# langgraph>=0.0.20
+# langchain-openai>=0.0.5

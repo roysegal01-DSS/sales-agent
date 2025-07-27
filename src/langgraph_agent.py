@@ -9,7 +9,9 @@ from langchain.tools import BaseTool
 
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
-from langgraph.graph.message import add_messages
+from langchain.schema import BaseMessage
+from typing import Annotated
+import operator
 
 from .agents.customer_profiler import CustomerProfiler
 from .agents.plan_analyzer import PlanAnalyzer
@@ -19,7 +21,7 @@ from .models.customer_profile import CustomerProfile, TelecomPlan
 
 class AgentState(TypedDict):
     """State shared across the LangGraph agent"""
-    messages: Annotated[List[Dict], add_messages]
+    messages: Annotated[List[Dict], operator.add]
     customer_conversation: str
     current_plan: Dict[str, Any]
     target_plan: Dict[str, Any]
