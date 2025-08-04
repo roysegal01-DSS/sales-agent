@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telecom Sales AI Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        
+        .input-section, .output-section {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .customer-type {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .type-btn {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .type-btn.active {
+            background: #4f46e5;
+            color: white;
+            border-color: #4f46e5;
+        }
+        
+        .type-btn:hover {
+            border-color: #4f46e5;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        
+        .sample-scenarios {
+            margin-top: 15px;
+        }
+        
+        .sample-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #e0e7ff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        
+        .sample-btn:hover {
+            background: #c7d2fe;
+        }
+        
+        .analyze-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .profile-card, .plan-card, .pitch-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4f46e5;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+        
+        .profile-details {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #4f46e5;
+            min-width: 80px;
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin-top: 10px;
+        }
+        
+        .plan-features li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .plan-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .score {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .pitch-content {
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .customer-type {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Telecom Sales AI Agent</h1>
+            <p>AI-powered personalized sales pitch generation using advanced customer profiling</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">
+                    📞 Customer Conversation
+                </h2>
+                
+                <div class="customer-type">
+                    <button class="type-btn active" data-type="business">Business</button>
+                    <button class="type-btn" data-type="family">Family</button>
+                    <button class="type-btn" data-type="senior">Senior</button>
+                </div>
+                
+                <textarea id="conversation" placeholder="Enter customer conversation or inquiry here..."></textarea>
+                
+                <div class="sample-scenarios">
+                    <p style="font-weight: 600; margin-bottom: 10px;">📋 Sample Scenarios:</p>
+                    <button class="sample-btn" data-scenario="business">Business Customer - Network Issues</button>
+                    <button class="sample-btn" data-scenario="family">Family Plan - Cost Optimization</button>
+                    <button class="sample-btn" data-scenario="senior">Senior Customer - Plan Simplification</button>
+                </div>
+                
+                <button class="analyze-btn" id="analyzeBtn">
+                    🎯 Generate Personalized Pitch
+                </button>
+            </div>
+            
+            <div class="output-section">
+                <h2 class="section-title">
+                    📊 AI Analysis & Recommendations
+                </h2>
+                
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing customer profile and generating personalized pitch...</p>
+                </div>
+                
+                <div id="results" class="results">
+                    <div class="profile-card">
+                        <div class="card-title">👤 Customer Profile</div>
+                        <div id="profileContent" class="profile-details"></div>
+                    </div>
+                    
+                    <div class="plan-card">
+                        <div class="card-title">📱 Recommended Plan</div>
+                        <div id="planContent"></div>
+                    </div>
+                    
+                    <div class="pitch-card">
+                        <div class="card-title">🎯 Personalized Sales Pitch</div>
+                        <div id="pitchContent" class="pitch-content"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCustomerType = 'business';
+        let sampleScenarios = {};
+
+        // Load sample scenarios
+        fetch('/api/sample-scenarios')
+            .then(response => response.json())
+            .then(data => {
+                sampleScenarios = data;
+            });
+
+        // Customer type selection
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCustomerType = btn.dataset.type;
+            });
+        });
+
+        // Sample scenario buttons
+        document.querySelectorAll('.sample-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const scenario = btn.dataset.scenario;
+                document.getElementById('conversation').value = sampleScenarios[scenario] || '';
+                
+                // Update customer type
+                currentCustomerType = scenario;
+                document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector(`[data-type="${scenario}"]`).classList.add('active');
+            });
+        });
+
+        // Analyze button
+        document.getElementById('analyzeBtn').addEventListener('click', async () => {
+            const conversation = document.getElementById('conversation').value.trim();
+            
+            if (!conversation) {
+                alert('Please enter a customer conversation first.');
+                return;
+            }
+
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+
+            // Show loading state
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'Analyzing...';
+            loading.style.display = 'block';
+            results.classList.remove('show');
+
+            try {
+                const response = await fetch('/api/analyze-customer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        conversation: conversation,
+                        customerType: currentCustomerType
+                    })
+                });
+
+                const data = await response.json();
+
+                // Display results
+                displayResults(data);
+                
+                // Show results
+                loading.style.display = 'none';
+                results.classList.add('show');
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while analyzing the customer. Please try again.');
+                loading.style.display = 'none';
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = '🎯 Generate Personalized Pitch';
+            }
+        });
+
+        function displayResults(data) {
+            const { customerProfile, recommendedPlan, pitch } = data;
+
+            // Customer Profile
+            const profileContent = document.getElementById('profileContent');
+            profileContent.innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Segment:</span>
+                    <span>${customerProfile.segment}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Needs:</span>
+                    <span>${customerProfile.needs.join(', ')}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Current:</span>
+                    <span>${customerProfile.currentPlan}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Pain Points:</span>
+                    <span>${customerProfile.painPoints.join(', ')}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Budget:</span>
+                    <span>${customerProfile.budget}</span>
+                </div>
+            `;
+
+            // Recommended Plan
+            const planContent = document.getElementById('planContent');
+            planContent.innerHTML = `
+                <h3>${recommendedPlan.name} - ${recommendedPlan.price}</h3>
+                <div style="margin: 10px 0;">
+                    <span class="score">Score: ${recommendedPlan.score}/10</span>
+                </div>
+                <ul class="plan-features">
+                    ${recommendedPlan.features.map(feature => `<li>${feature}</li>`).join('')}
+                </ul>
+            `;
+
+            // Sales Pitch
+            const pitchContent = document.getElementById('pitchContent');
+            pitchContent.textContent = pitch;
+        }
+    </script>
+</body>
+</html>
