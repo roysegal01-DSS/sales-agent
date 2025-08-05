@@ -72,11 +72,15 @@ app.post('/api/analyze-customer', (req, res) => {
   // Generate mock pitch
   const pitch = generateMockPitch(profile, recommendedPlan);
   
+  // Generate detailed analysis
+  const detailedAnalysis = generateDetailedAnalysis(profile, recommendedPlan, customerType);
+  
   res.json({
     customerProfile: profile,
     recommendedPlan: recommendedPlan,
     pitch: pitch,
-    confidence: 0.85
+    confidence: 0.85,
+    detailedAnalysis: detailedAnalysis
   });
 });
 
@@ -119,6 +123,103 @@ This plan gives you exactly what you use while keeping money in your pocket.`
   };
 
   return pitches[profile.segment.toLowerCase()] || pitches.business;
+}
+
+function generateDetailedAnalysis(profile, plan, customerType) {
+  const analyses = {
+    family: {
+      customerProfiling: {
+        extractedKeywords: [
+          { category: "Family indicators", keywords: "\"family of four\", \"kids\"" },
+          { category: "Cost concerns", keywords: "\"costing us almost $200\", \"save some money\"" },
+          { category: "Usage issues", keywords: "\"running out of data\"" },
+          { category: "Feature needs", keywords: "\"parental controls\"" },
+          { category: "Service goals", keywords: "\"better service\", \"consolidate\"" }
+        ],
+        intentClassification: {
+          primary: "Cost Reduction",
+          secondary: "Service Consolidation", 
+          tertiary: "Feature Enhancement"
+        },
+        priorityAnalysis: {
+          costSensitivity: { score: 9.5, level: "CRITICAL", color: "critical" },
+          dataPriority: { score: 7.5, level: "HIGH", color: "high" },
+          familyFeatures: { score: 8.0, level: "HIGH", color: "high" },
+          networkQuality: { score: 6.0, level: "MEDIUM", color: "medium" },
+          flexibility: { score: 5.5, level: "MEDIUM", color: "medium" }
+        },
+        segmentation: {
+          primarySegment: "Family (4 lines)",
+          usagePattern: "Mixed Usage",
+          budgetCategory: "Cost-Conscious",
+          decisionMaker: "Primary Account Holder"
+        },
+        painPoints: [
+          { issue: "High Monthly Costs", description: "Currently paying ~$200/month for 4 individual plans" },
+          { issue: "Data Limitations", description: "Children frequently exceed data allowances" },
+          { issue: "Lack of Control", description: "No parental controls on current individual plans" },
+          { issue: "Plan Complexity", description: "Managing 4 separate bills and plans" }
+        ]
+      },
+      benefitsComparison: {
+        costAnalysis: {
+          currentCost: 200,
+          recommendedCost: 140,
+          monthlySavings: 60,
+          annualSavings: 720,
+          savingsPercentage: 30
+        },
+        featureComparison: [
+          { feature: "Monthly Cost", current: "$200/month (4 individual plans)", recommended: "$140/month (Family Share 4-Line)", benefit: "Save $60/month", type: "savings" },
+          { feature: "Annual Savings", current: "$2,400/year", recommended: "$1,680/year", benefit: "Save $720/year", type: "savings" },
+          { feature: "Data Allowance", current: "4 × 10GB = 40GB total (separate)", recommended: "50GB shared pool", benefit: "+10GB total, flexible sharing", type: "improvement" },
+          { feature: "Parental Controls", current: "❌ Not available", recommended: "✅ Full parental control suite", benefit: "Content filtering, time limits", type: "new" },
+          { feature: "Billing", current: "4 separate bills", recommended: "1 consolidated bill", benefit: "Simplified management", type: "improvement" },
+          { feature: "Account Management", current: "4 separate accounts", recommended: "1 family account", benefit: "Centralized control", type: "improvement" }
+        ]
+      },
+      suitabilityScoring: {
+        overall: 8.8,
+        breakdown: {
+          costFit: { score: 9.5, label: "Cost Fit" },
+          featureMatch: { score: 9.0, label: "Feature Match" },
+          usageAlignment: { score: 8.0, label: "Usage Alignment" },
+          familyNeeds: { score: 9.5, label: "Family Needs" }
+        },
+        reasoning: [
+          "Cost Optimization: 30% monthly savings addresses primary concern",
+          "Data Flexibility: Shared pool prevents individual overages", 
+          "Family Features: Built-in parental controls and management",
+          "Simplification: One bill, one account, easier management"
+        ]
+      },
+      personalization: {
+        messagingStrategy: [
+          "Lead with savings: Emphasize $60/month reduction",
+          "Address pain points: Mention data sharing and controls",
+          "Family focus: Use family-centric language",
+          "Simplicity emphasis: Highlight consolidated billing",
+          "Value proposition: Better service for less money"
+        ],
+        objectionHandling: [
+          { objection: "What if we need more data?", response: "The shared 50GB pool is actually 10GB more than your current total, and if anyone needs extra, the whole family benefits from the shared allowance." },
+          { objection: "Will service quality decrease?", response: "You'll get the same network quality, but with better family features and significant cost savings." }
+        ]
+      },
+      roiAnalysis: {
+        yearOne: 720,
+        yearTwo: 1440,
+        yearThree: 2160,
+        additionalValue: [
+          "Parental control features (value: ~$10/month = $120/year)",
+          "Simplified billing management (time savings: ~2 hours/month)",
+          "Reduced overage risk (potential savings: $50-100/month)"
+        ]
+      }
+    }
+  };
+
+  return analyses[customerType] || null;
 }
 
 app.listen(PORT, () => {
